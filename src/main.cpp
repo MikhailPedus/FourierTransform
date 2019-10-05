@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
   cv::resize(img, img, cv::Size(500, 500));
 
-  std::unique_ptr<NoizeMapGenerator> noize_generator(new NoizeMapVetrical(50));
+  std::unique_ptr<NoizeMapGenerator> noize_generator(new NoizeMapVetrical(20));
 
   cv::Mat noize_img = noize_generator->Generate(img.size());
 
@@ -61,11 +61,12 @@ int main(int argc, char** argv) {
   mean_weith.reserve(100);
 
   cv::Mat& explore_img = img_float;
-  for (double frequency = 1; frequency < 25; frequency += 0.25) {
+  for (double frequency = 1; frequency < 50; frequency += 0.25) {
     std::cout << "explore " << frequency << " frequency.." << std::endl;
     std::vector<std::complex<double>> result_points;
     result_points.reserve(static_cast<size_t>(explore_img.cols));
-    draw_complex.setTo(0);
+    cv::Scalar color(50 + (rand() % 200), 50 + (rand() % 200),
+                     50 + (rand() % 200));
     for (int i = 0; i < explore_img.cols; ++i) {
       double time_elapsed =
           static_cast<double>(i) / static_cast<double>(explore_img.cols);
@@ -75,12 +76,18 @@ int main(int argc, char** argv) {
                     std::complex<double>(static_cast<double>(
                         explore_img.at<float>(explore_img.rows / 2, i)));
       result_points.emplace_back(result);
-      cv::circle(draw_complex,
-                 cv::Point(draw_complex.cols / 2 + result.real() * 100,
-                           draw_complex.rows / 2 - result.imag() * 100),
-                 2, cv::Scalar(0, 0, 250), -1);
+      cv::circle(
+          draw_complex,
+          cv::Point(static_cast<int>(draw_complex.cols / 2 +
+                                     result.real() * draw_complex.cols / 2),
+                    static_cast<int>(draw_complex.rows / 2 -
+                                     result.imag() * draw_complex.rows / 2)),
+          2, color, -1);
       cv::imshow("d", draw_complex);
       cv::waitKey(1);
+      if (i % 5 == 0) {
+        draw_complex -= cv::Scalar(1, 1, 1);
+      }
     }
     double all_real_summ = 0;
     double all_imag_summ = 0;
@@ -93,7 +100,7 @@ int main(int argc, char** argv) {
     std::cout << "\tresult is:" << mean_weith.back().second << std::endl;
   }
 
-  cv::Mat draw_spectr(500, 1000, CV_8UC3, cv::Scalar::all(0));
+  cv::Mat draw_spectr(1000, 1500, CV_8UC3, cv::Scalar::all(0));
   double x_coeff = 20;
   double y_coeff = 2;
   for (size_t i = 1; i < mean_weith.size(); ++i) {
