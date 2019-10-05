@@ -14,11 +14,15 @@ find_package(OpenCV REQUIRED)
 
 add_executable(FourierTransform 
     src/main.cpp
+    src/noize_map_generator/noize_map_generator.cpp
     )
 
 target_compile_definitions(FourierTransform
     PRIVATE
     RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/resources"
     )
-
+target_include_directories(FourierTransform
+    PRIVATE
+    "${CMAKE_CURRENT_SOURCE_DIR}/include"
+    )
 target_link_libraries(FourierTransform ${OpenCV_LIBS})
