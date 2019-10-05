@@ -10,6 +10,15 @@ endif ()
 
 project(FourierTransform)
 
+find_package(OpenCV REQUIRED)
+
 add_executable(FourierTransform 
-	src/main.cpp
-	)
+    src/main.cpp
+    )
+
+target_compile_definitions(FourierTransform
+    PRIVATE
+    RESOURCE_DIR="${CMAKE_CURRENT_SOURCE_DIR}/resources"
+    )
+
+target_link_libraries(FourierTransform ${OpenCV_LIBS})
